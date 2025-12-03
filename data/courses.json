@@ -1,0 +1,220 @@
+{
+  "courses": [
+    {
+      "id": "course-1764544361443",
+      "title": "Python",
+      "description": "Описание курса",
+      "modules": [
+        {
+          "id": "module-1764544376594",
+          "number": 0,
+          "title": "Введение",
+          "description": "Введение в python",
+          "lessons": [
+            {
+              "id": "lesson-1764544417633",
+              "title": "Итак введение",
+              "content": "ща питон изучим жестко"
+            },
+            {
+              "id": "lesson-1764591480259",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591480402",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591480556",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591480819",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591480936",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591481388",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591481691",
+              "title": "Новый урок",
+              "content": ""
+            }
+          ]
+        },
+        {
+          "id": "module-1764590188169",
+          "number": 1,
+          "title": "Основы python ",
+          "description": "Основы питона ",
+          "lessons": [
+            {
+              "id": "lesson-1764591476131",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591476158",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591476361",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591476523",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591476665",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591476790",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591477173",
+              "title": "Новый урок",
+              "content": "",
+              "sublessons": [
+                {
+                  "id": "sublesson-1764591698570",
+                  "title": "Новый подурок",
+                  "content": "",
+                  "quizzes": [],
+                  "tasks": []
+                }
+              ]
+            },
+            {
+              "id": "lesson-1764591477320",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591477456",
+              "title": "Новый урок",
+              "content": "",
+              "sublessons": [
+                {
+                  "id": "sublesson-1764591700438",
+                  "title": "Новый подурок",
+                  "content": "",
+                  "quizzes": [],
+                  "tasks": []
+                }
+              ]
+            },
+            {
+              "id": "lesson-1764591477731",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591477928",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591478192",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591478463",
+              "title": "Новый урок",
+              "content": ""
+            },
+            {
+              "id": "lesson-1764591478725",
+              "title": "Новый урок",
+              "content": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "exercises": [
+    {
+      "id": "ex-2",
+      "courseId": "course-1764544361443",
+      "level": 1,
+      "title": "Сумма чисел",
+      "description": "Напиши программу, которая складывает числа 5 и 3 и выводит результат.",
+      "initialCode": "# Сложи 5 и 3\n",
+      "solution": "print(5 + 3)",
+      "hint": "Используй оператор +",
+      "answer": "8",
+      "answers": [
+        "8"
+      ]
+    },
+    {
+      "id": "ex-3",
+      "courseId": "course-1764544361443",
+      "level": 1,
+      "title": "Переменные",
+      "description": "Создай переменную name со своим именем и выведи её.",
+      "initialCode": "# Создай переменную name\n",
+      "solution": "name = \"Имя\"\nprint(name)",
+      "hint": "name = \"твоё имя\""
+    },
+    {
+      "id": "ex-4",
+      "courseId": "course-1764544361443",
+      "level": 2,
+      "title": "Калькулятор",
+      "description": "Напиши функцию add(a, b), которая возвращает сумму двух чисел.",
+      "initialCode": "def add(a, b):\n    # твой код\n    pass\n\n# Проверка\nprint(add(2, 3))  # Должно вывести 5",
+      "solution": "def add(a, b):\n    return a + b\n\nprint(add(2, 3))",
+      "hint": "Используй return a + b"
+    },
+    {
+      "id": "ex-5",
+      "courseId": "course-1764544361443",
+      "level": 2,
+      "title": "Чётное или нечётное",
+      "description": "Напиши функцию is_even(n), которая возвращает True если число чётное.",
+      "initialCode": "def is_even(n):\n    # твой код\n    pass\n\nprint(is_even(4))  # True\nprint(is_even(7))  # False",
+      "solution": "def is_even(n):\n    return n % 2 == 0",
+      "hint": "Используй оператор % для остатка от деления"
+    },
+    {
+      "id": "ex-6",
+      "courseId": "course-1764544361443",
+      "level": 3,
+      "title": "FizzBuzz",
+      "description": "Напиши программу, которая выводит числа от 1 до 20. Но для кратных 3 выводи 'Fizz', для кратных 5 — 'Buzz', для кратных и 3, и 5 — 'FizzBuzz'.",
+      "initialCode": "# FizzBuzz от 1 до 20\nfor i in range(1, 21):\n    # твой код\n    pass",
+      "solution": "for i in range(1, 21):\n    if i % 3 == 0 and i % 5 == 0:\n        print('FizzBuzz')\n    elif i % 3 == 0:\n        print('Fizz')\n    elif i % 5 == 0:\n        print('Buzz')\n    else:\n        print(i)",
+      "hint": "Сначала проверь делимость на 15 (3 и 5)"
+    },
+    {
+      "id": "ex-1764588723197",
+      "level": 1,
+      "title": "Новое задание",
+      "description": "Описание задания",
+      "initialCode": "# Твой код здесь\n",
+      "solution": "",
+      "hint": ""
+    }
+  ]
+}

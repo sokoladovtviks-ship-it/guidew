@@ -1,0 +1,141 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-rgb: 255, 255, 255;
+}
+
+body {
+  color: rgb(var(--foreground-rgb));
+  background: linear-gradient(to bottom, #f8fafc, #ffffff);
+  min-height: 100vh;
+}
+
+/* Стили для блоков кода */
+.code-block {
+  background: #1e293b;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  overflow-x: auto;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.code-block code {
+  color: #e2e8f0;
+}
+
+/* Ключевые слова */
+.code-block .keyword {
+  color: #c084fc;
+}
+
+/* Строки */
+.code-block .string {
+  color: #86efac;
+}
+
+/* Комментарии */
+.code-block .comment {
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Числа */
+.code-block .number {
+  color: #fbbf24;
+}
+
+/* Функции */
+.code-block .function {
+  color: #60a5fa;
+}
+
+/* Плавные переходы */
+.topic-card {
+  transition: all 0.2s ease-in-out;
+}
+
+.topic-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px -10px rgba(59, 130, 246, 0.3);
+}
+
+/* Схемы и изображения */
+.schema-image {
+  border-radius: 0.75rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.schema-image:hover {
+  transform: scale(1.02);
+}
+
+/* Подсветка важного текста */
+.highlight {
+  background: linear-gradient(120deg, #fef08a 0%, #fde047 100%);
+  padding: 0.1em 0.3em;
+  border-radius: 0.25rem;
+}
+
+/* Информационные блоки */
+.info-block {
+  border-left: 4px solid #3b82f6;
+  background: linear-gradient(to right, #eff6ff, transparent);
+  padding: 1rem 1.5rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+.warning-block {
+  border-left: 4px solid #f59e0b;
+  background: linear-gradient(to right, #fefce8, transparent);
+  padding: 1rem 1.5rem;
+  border-radius: 0 0.5rem 0.5rem 0;
+}
+
+/* Анимация появления */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeInUp {
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+/* Видео контейнер */
+.video-container {
+  position: relative;
+  padding-bottom: 56.25%; /* 16:9 */
+  height: 0;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  background: #1e293b;
+}
+
+.video-container iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0.75rem;
+}
+
+/* Изображения в контенте урока */
+.lesson-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1rem 0;
+}
