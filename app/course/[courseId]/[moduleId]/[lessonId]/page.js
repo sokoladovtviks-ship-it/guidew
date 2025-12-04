@@ -40,6 +40,39 @@ export default function LessonPage() {
     }
   }, [data])
 
+  // Загрузка скриптов для embed (Tenor, GIPHY и т.д.)
+  useEffect(() => {
+    const content = data?.lesson?.content
+    if (content) {
+      // Проверяем наличие Tenor embed
+      if (content.includes('tenor-gif-embed') || content.includes('tenor.com')) {
+        const existingScript = document.querySelector('script[src*="tenor.com/embed.js"]')
+        if (!existingScript) {
+          const script = document.createElement('script')
+          script.src = 'https://tenor.com/embed.js'
+          script.async = true
+          document.body.appendChild(script)
+        } else {
+          // Если скрипт уже загружен, перезапускаем его
+          if (window.TENOR) {
+            window.TENOR.init && window.TENOR.init()
+          }
+        }
+      }
+      
+      // Проверяем наличие GIPHY embed
+      if (content.includes('giphy-embed') || content.includes('giphy.com')) {
+        const existingScript = document.querySelector('script[src*="giphy.com/embed.js"]')
+        if (!existingScript) {
+          const script = document.createElement('script')
+          script.src = 'https://giphy.com/embed.js'
+          script.async = true
+          document.body.appendChild(script)
+        }
+      }
+    }
+  }, [data?.lesson?.content])
+
   const fetchData = async () => {
     try {
       const [lessonRes, courseRes] = await Promise.all([

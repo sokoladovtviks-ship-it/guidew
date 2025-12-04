@@ -169,3 +169,27 @@ img[src*="data:image/gif"] {
 .gif-animation {
   animation: imageLoad 0.3s ease-out;
 }
+
+/* Стили для Tenor GIF embeds */
+.tenor-gif-embed {
+  max-width: 100%;
+  margin: 1rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+/* Стили для GIPHY embeds */
+.giphy-embed {
+  max-width: 100%;
+  margin: 1rem 0;
+  border-radius: 0.75rem;
+}
+
+/* Контейнер для внешних GIF */
+.external-gif-container {
+  max-width: 100%;
+  margin: 1rem 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #f3f4f6;
+}

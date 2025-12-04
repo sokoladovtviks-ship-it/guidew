@@ -26,6 +26,38 @@ export default function SublessonPage() {
     fetchData()
   }, [params])
 
+  // Загрузка скриптов для embed (Tenor, GIPHY и т.д.)
+  useEffect(() => {
+    if (sublesson?.content) {
+      // Проверяем наличие Tenor embed
+      if (sublesson.content.includes('tenor-gif-embed') || sublesson.content.includes('tenor.com')) {
+        const existingScript = document.querySelector('script[src*="tenor.com/embed.js"]')
+        if (!existingScript) {
+          const script = document.createElement('script')
+          script.src = 'https://tenor.com/embed.js'
+          script.async = true
+          document.body.appendChild(script)
+        } else {
+          // Если скрипт уже загружен, перезапускаем его
+          if (window.TENOR) {
+            window.TENOR.init && window.TENOR.init()
+          }
+        }
+      }
+      
+      // Проверяем наличие GIPHY embed
+      if (sublesson.content.includes('giphy-embed') || sublesson.content.includes('giphy.com')) {
+        const existingScript = document.querySelector('script[src*="giphy.com/embed.js"]')
+        if (!existingScript) {
+          const script = document.createElement('script')
+          script.src = 'https://giphy.com/embed.js'
+          script.async = true
+          document.body.appendChild(script)
+        }
+      }
+    }
+  }, [sublesson?.content])
+
   const fetchData = async () => {
     try {
       const courseRes = await fetch(`/api/courses/${params.courseId}`)
