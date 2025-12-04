@@ -31,18 +31,31 @@ export default function SublessonPage() {
     if (sublesson?.content) {
       // Проверяем наличие Tenor embed
       if (sublesson.content.includes('tenor-gif-embed') || sublesson.content.includes('tenor.com')) {
-        const existingScript = document.querySelector('script[src*="tenor.com/embed.js"]')
-        if (!existingScript) {
-          const script = document.createElement('script')
-          script.src = 'https://tenor.com/embed.js'
-          script.async = true
-          document.body.appendChild(script)
-        } else {
-          // Если скрипт уже загружен, перезапускаем его
-          if (window.TENOR) {
-            window.TENOR.init && window.TENOR.init()
+        const loadTenor = () => {
+          const existingScript = document.querySelector('script[src*="tenor.com/embed.js"]')
+          if (!existingScript) {
+            const script = document.createElement('script')
+            script.src = 'https://tenor.com/embed.js'
+            script.async = true
+            script.onload = () => {
+              // Инициализируем после загрузки
+              setTimeout(() => {
+                if (window.TENOR && window.TENOR.init) {
+                  window.TENOR.init()
+                }
+              }, 100)
+            }
+            document.body.appendChild(script)
+          } else {
+            // Скрипт уже загружен - переинициализируем
+            setTimeout(() => {
+              if (window.TENOR && window.TENOR.init) {
+                window.TENOR.init()
+              }
+            }, 100)
           }
         }
+        loadTenor()
       }
       
       // Проверяем наличие GIPHY embed
