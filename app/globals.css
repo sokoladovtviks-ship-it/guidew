@@ -294,20 +294,53 @@ img[src*="data:image/gif"] {
 /* Переопределяем стили Prism для лучшего вида */
 .prose pre[class*="language-"] {
   background: #2d3748 !important;
+  border-radius: 0.75rem !important;
+  padding: 1.25rem !important;
+  margin: 1.5rem 0 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
 }
 
 .prose code[class*="language-"] {
   color: #e2e8f0 !important;
+  font-family: 'Fira Code', 'Consolas', monospace !important;
+  font-size: 0.9rem !important;
+  line-height: 1.6 !important;
 }
 
-/* Токены Prism */
-.token.comment { color: #718096 !important; }
-.token.keyword { color: #9f7aea !important; }
-.token.string { color: #68d391 !important; }
-.token.number { color: #fbb6ce !important; }
-.token.function { color: #63b3ed !important; }
-.token.operator { color: #f6ad55 !important; }
-.token.punctuation { color: #cbd5e0 !important; }
+/* Токены Prism - Python подсветка */
+.token.comment, .token.prolog, .token.doctype, .token.cdata { 
+  color: #718096 !important; 
+  font-style: italic;
+}
+
+.token.keyword { 
+  color: #9f7aea !important; 
+  font-weight: bold;
+}
+
+.token.string, .token.char, .token.attr-value, .token.regex, .token.variable { 
+  color: #68d391 !important; 
+}
+
+.token.number, .token.boolean, .token.constant { 
+  color: #fbb6ce !important; 
+}
+
+.token.function, .token.class-name { 
+  color: #63b3ed !important; 
+}
+
+.token.operator, .token.entity, .token.url { 
+  color: #f6ad55 !important; 
+}
+
+.token.punctuation, .token.symbol { 
+  color: #cbd5e0 !important; 
+}
+
+.token.builtin { 
+  color: #fbb6ce !important; 
+}
 
 /* Горизонтальная линия */
 .prose hr {

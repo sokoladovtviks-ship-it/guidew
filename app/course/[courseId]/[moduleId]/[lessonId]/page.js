@@ -69,10 +69,19 @@ export default function LessonPage() {
   // Инициализация подсветки кода после рендера
   useEffect(() => {
     const content = data?.lesson?.content
-    if (content && typeof window !== 'undefined' && window.Prism) {
-      setTimeout(() => {
-        window.Prism.highlightAll()
-      }, 100)
+    if (content) {
+      const highlightCode = async () => {
+        try {
+          const Prism = (await import('prismjs')).default
+          await import('prismjs/components/prism-python')
+          await import('prismjs/components/prism-javascript')
+          Prism.highlightAll()
+        } catch (error) {
+          console.log('Prism loading error:', error)
+        }
+      }
+      
+      setTimeout(highlightCode, 200)
     }
   }, [data?.lesson?.content])
 
