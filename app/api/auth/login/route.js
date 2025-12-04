@@ -1,12 +1,11 @@
 import { NextResponse } from 'next/server'
-import { findUserByCredentials, getUsers } from '@/lib/users'
+import { findUserByCredentials } from '@/lib/users'
 
 export async function POST(request) {
   try {
     const { username, password } = await request.json()
     
     console.log('Login attempt:', { username, password })
-    console.log('All users:', getUsers())
 
     if (!username || !password) {
       return NextResponse.json(
@@ -15,8 +14,8 @@ export async function POST(request) {
       )
     }
 
-    // Ищем пользователя
-    const user = findUserByCredentials(username, password)
+    // Ищем пользователя (async для PostgreSQL)
+    const user = await findUserByCredentials(username, password)
     console.log('Found user:', user)
     
     if (!user) {

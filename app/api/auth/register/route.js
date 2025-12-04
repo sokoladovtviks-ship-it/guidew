@@ -13,7 +13,7 @@ export async function POST(request) {
     }
 
     // Проверяем, существует ли пользователь
-    const existingUser = findUserByUsername(username)
+    const existingUser = await findUserByUsername(username)
     if (existingUser) {
       return NextResponse.json(
         { error: 'Пользователь с таким именем уже существует' },
@@ -21,14 +21,8 @@ export async function POST(request) {
       )
     }
 
-    // Создаем пользователя
-    const newUser = {
-      id: Date.now(),
-      username,
-      password
-    }
-    
-    addUser(newUser)
+    // Создаем пользователя в PostgreSQL
+    const newUser = await addUser(username, password)
     
     return NextResponse.json({
       success: true,
