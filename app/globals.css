@@ -193,3 +193,122 @@ img[src*="data:image/gif"] {
   overflow: hidden;
   background: #f3f4f6;
 }
+
+/* ========== СТИЛИ ДЛЯ КОНТЕНТА УРОКОВ ========== */
+
+/* Заголовки */
+.prose h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.3;
+}
+
+.prose h2 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #374151;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.prose h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #4b5563;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Параграфы */
+.prose p {
+  color: #4b5563;
+  line-height: 1.75;
+  margin-bottom: 1rem;
+}
+
+/* Списки */
+.prose ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.prose ol {
+  list-style-type: decimal;
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.prose li {
+  color: #4b5563;
+  margin-bottom: 0.5rem;
+  line-height: 1.6;
+}
+
+/* Цитаты */
+.prose blockquote {
+  border-left: 4px solid #3b82f6;
+  background: linear-gradient(to right, #eff6ff, transparent);
+  padding: 1rem 1.5rem;
+  margin: 1.5rem 0;
+  border-radius: 0 0.5rem 0.5rem 0;
+  font-style: italic;
+  color: #4b5563;
+}
+
+/* Инлайн код */
+.prose code:not(pre code) {
+  background: #fef3c7;
+  color: #92400e;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+  font-family: 'Fira Code', 'Consolas', monospace;
+}
+
+/* Блоки кода */
+.prose pre {
+  background: #1e293b;
+  border-radius: 0.75rem;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.5rem 0;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.prose pre code {
+  color: #e2e8f0;
+  font-family: 'Fira Code', 'Consolas', monospace;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  background: transparent;
+  padding: 0;
+}
+
+/* Горизонтальная линия */
+.prose hr {
+  border: none;
+  border-top: 2px solid #e5e7eb;
+  margin: 2rem 0;
+}
+
+/* Жирный текст */
+.prose strong {
+  color: #1f2937;
+  font-weight: 600;
+}
+
+/* Ссылки */
+.prose a {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.prose a:hover {
+  color: #2563eb;
+}
