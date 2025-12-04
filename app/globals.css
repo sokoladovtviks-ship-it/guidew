@@ -139,3 +139,33 @@ body {
   border-radius: 0.75rem;
   margin: 1rem 0;
 }
+
+/* Специальные стили для GIF анимаций */
+.gif-animation {
+  image-rendering: auto !important;
+  -webkit-image-rendering: auto !important;
+  -moz-image-rendering: auto !important;
+  -o-image-rendering: auto !important;
+  image-rendering: -webkit-optimize-contrast !important;
+}
+
+/* Обеспечиваем правильное отображение GIF в разных контекстах */
+img[src*="data:image/gif"] {
+  image-rendering: auto !important;
+}
+
+/* Анимация для загрузки изображений */
+@keyframes imageLoad {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.gif-animation {
+  animation: imageLoad 0.3s ease-out;
+}

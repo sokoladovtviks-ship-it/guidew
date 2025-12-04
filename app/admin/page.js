@@ -947,7 +947,12 @@ function EditModal({ item, onClose, onSave }) {
       reader.onload = (e) => {
         const base64 = e.target.result
         const isGif = file.type === 'image/gif'
-        const imgTag = `<img src="${base64}" alt="Изображение" class="max-w-full h-auto rounded-lg my-4" />`
+        
+        // Для GIF добавляем специальные атрибуты для сохранения анимации
+        const imgTag = isGif 
+          ? `<img src="${base64}" alt="GIF анимация" class="max-w-full h-auto rounded-lg my-4 gif-animation" style="image-rendering: auto;" loading="lazy" />`
+          : `<img src="${base64}" alt="Изображение" class="max-w-full h-auto rounded-lg my-4" loading="lazy" />`
+        
         insertAtCursor(imgTag)
         setUploading(false)
       }

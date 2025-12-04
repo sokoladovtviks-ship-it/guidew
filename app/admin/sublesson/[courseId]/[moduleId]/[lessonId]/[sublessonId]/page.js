@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Save, Plus, Trash2, Check, X } from 'lucide-react'
+import { ArrowLeft, Save, Plus, Trash2, Check, X, Image, Upload } from 'lucide-react'
 
 export default function EditSublessonPage() {
   const params = useParams()
@@ -12,6 +12,9 @@ export default function EditSublessonPage() {
   const [course, setCourse] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [uploading, setUploading] = useState(false)
+  const textareaRef = useRef(null)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     checkAuth()
@@ -81,6 +84,75 @@ export default function EditSublessonPage() {
       console.error('Error saving:', error)
     }
     setSaving(false)
+  }
+
+  // Вставить текст в позицию курсора
+  const insertAtCursor = (text) => {
+    const textarea = textareaRef.current
+    if (!textarea) return
+    
+    const start = textarea.selectionStart
+    const end = textarea.selectionEnd
+    const content = sublesson.content || ''
+    const newContent = content.substring(0, start) + text + content.substring(end)
+    setSublesson(prev => ({ ...prev, content: newContent }))
+    
+    // Восстановить позицию курсора
+    setTimeout(() => {
+      textarea.focus()
+      textarea.setSelectionRange(start + text.length, start + text.length)
+    }, 0)
+  }
+
+  // Обработчик вставки (Ctrl+V)
+  const handlePaste = async (e) => {
+    const items = e.clipboardData?.items
+    if (!items) return
+
+    for (const item of items) {
+      if (item.type.startsWith('image/')) {
+        e.preventDefault()
+        const file = item.getAsFile()
+        if (file) {
+          await uploadAndInsertImage(file)
+        }
+        return
+      }
+    }
+  }
+
+  // Загрузка изображения и вставка
+  const uploadAndInsertImage = async (file) => {
+    setUploading(true)
+    try {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const base64 = e.target.result
+        const isGif = file.type === 'image/gif'
+        
+        // Для GIF добавляем специальные атрибуты для сохранения анимации
+        const imgTag = isGif 
+          ? `<img src="${base64}" alt="GIF анимация" class="max-w-full h-auto rounded-lg my-4 gif-animation" style="image-rendering: auto;" loading="lazy" />`
+          : `<img src="${base64}" alt="Изображение" class="max-w-full h-auto rounded-lg my-4" loading="lazy" />`
+        
+        insertAtCursor(imgTag)
+        setUploading(false)
+      }
+      reader.readAsDataURL(file)
+    } catch (error) {
+      console.error('Ошибка загрузки:', error)
+      alert('Ошибка загрузки изображения')
+      setUploading(false)
+    }
+  }
+
+  // Обработчик выбора файла
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      uploadAndInsertImage(file)
+    }
+    e.target.value = '' // Сброс для повторного выбора
   }
 
   // Добавить тест
@@ -171,9 +243,44 @@ export default function EditSublessonPage() {
             
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Контент (HTML)</label>
+              
+              {/* Панель инструментов */}
+              <div className="flex items-center gap-2 mb-2 p-2 bg-gray-50 rounded-lg border">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*,.gif"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+                
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="flex items-center gap-1 px-2 py-1.5 text-xs bg-white text-gray-700 rounded hover:bg-gray-50 border border-gray-300 disabled:opacity-50"
+                  title="Загрузить изображение или GIF"
+                >
+                  {uploading ? (
+                    <div className="w-3.5 h-3.5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                  ) : (
+                    <Upload className="w-3.5 h-3.5" />
+                  )}
+                  <span className="hidden sm:inline">
+                    {uploading ? 'Загрузка...' : 'Изображение'}
+                  </span>
+                </button>
+                
+                <span className="hidden sm:block text-xs text-gray-500 ml-auto">
+                  💡 Ctrl+V для вставки / поддержка GIF
+                </span>
+              </div>
+              
               <textarea
+                ref={textareaRef}
                 value={sublesson.content}
                 onChange={(e) => setSublesson(prev => ({ ...prev, content: e.target.value }))}
+                onPaste={handlePaste}
                 rows={8}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 font-mono text-sm"
                 placeholder="<h2>Заголовок</h2><p>Текст подурока...</p>"
