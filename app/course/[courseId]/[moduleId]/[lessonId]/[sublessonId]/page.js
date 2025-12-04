@@ -53,6 +53,15 @@ export default function SublessonPage() {
     return processed
   }
 
+  // Инициализация подсветки кода после рендера
+  useEffect(() => {
+    if (sublesson?.content && typeof window !== 'undefined' && window.Prism) {
+      setTimeout(() => {
+        window.Prism.highlightAll()
+      }, 100)
+    }
+  }, [sublesson?.content])
+
   const fetchData = async () => {
     try {
       const courseRes = await fetch(`/api/courses/${params.courseId}`)

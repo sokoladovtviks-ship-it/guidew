@@ -66,6 +66,16 @@ export default function LessonPage() {
     return processed
   }
 
+  // Инициализация подсветки кода после рендера
+  useEffect(() => {
+    const content = data?.lesson?.content
+    if (content && typeof window !== 'undefined' && window.Prism) {
+      setTimeout(() => {
+        window.Prism.highlightAll()
+      }, 100)
+    }
+  }, [data?.lesson?.content])
+
   const fetchData = async () => {
     try {
       const [lessonRes, courseRes] = await Promise.all([

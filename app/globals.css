@@ -271,24 +271,43 @@ img[src*="data:image/gif"] {
   font-family: 'Fira Code', 'Consolas', monospace;
 }
 
-/* Блоки кода */
+/* Блоки кода с Prism.js */
 .prose pre {
-  background: #1e293b;
+  background: #2d3748 !important;
   border-radius: 0.75rem;
   padding: 1.25rem;
   overflow-x: auto;
   margin: 1.5rem 0;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  position: relative;
 }
 
 .prose pre code {
-  color: #e2e8f0;
+  color: #e2e8f0 !important;
   font-family: 'Fira Code', 'Consolas', monospace;
   font-size: 0.9rem;
   line-height: 1.6;
-  background: transparent;
+  background: transparent !important;
   padding: 0;
 }
+
+/* Переопределяем стили Prism для лучшего вида */
+.prose pre[class*="language-"] {
+  background: #2d3748 !important;
+}
+
+.prose code[class*="language-"] {
+  color: #e2e8f0 !important;
+}
+
+/* Токены Prism */
+.token.comment { color: #718096 !important; }
+.token.keyword { color: #9f7aea !important; }
+.token.string { color: #68d391 !important; }
+.token.number { color: #fbb6ce !important; }
+.token.function { color: #63b3ed !important; }
+.token.operator { color: #f6ad55 !important; }
+.token.punctuation { color: #cbd5e0 !important; }
 
 /* Горизонтальная линия */
 .prose hr {
