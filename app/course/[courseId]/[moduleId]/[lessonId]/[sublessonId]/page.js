@@ -26,50 +26,32 @@ export default function SublessonPage() {
     fetchData()
   }, [params])
 
-  // Загрузка скриптов для embed (Tenor, GIPHY и т.д.)
-  useEffect(() => {
-    if (sublesson?.content) {
-      // Проверяем наличие Tenor embed
-      if (sublesson.content.includes('tenor-gif-embed') || sublesson.content.includes('tenor.com')) {
-        const loadTenor = () => {
-          const existingScript = document.querySelector('script[src*="tenor.com/embed.js"]')
-          if (!existingScript) {
-            const script = document.createElement('script')
-            script.src = 'https://tenor.com/embed.js'
-            script.async = true
-            script.onload = () => {
-              // Инициализируем после загрузки
-              setTimeout(() => {
-                if (window.TENOR && window.TENOR.init) {
-                  window.TENOR.init()
-                }
-              }, 100)
-            }
-            document.body.appendChild(script)
-          } else {
-            // Скрипт уже загружен - переинициализируем
-            setTimeout(() => {
-              if (window.TENOR && window.TENOR.init) {
-                window.TENOR.init()
-              }
-            }, 100)
-          }
-        }
-        loadTenor()
-      }
-      
-      // Проверяем наличие GIPHY embed
-      if (sublesson.content.includes('giphy-embed') || sublesson.content.includes('giphy.com')) {
-        const existingScript = document.querySelector('script[src*="giphy.com/embed.js"]')
-        if (!existingScript) {
-          const script = document.createElement('script')
-          script.src = 'https://giphy.com/embed.js'
-          script.async = true
-          document.body.appendChild(script)
-        }
-      }
-    }
-  }, [sublesson?.content])
+  // Функция для обработки контента - конвертирует Tenor embed в iframe
+  const processContent = (content) => {
+    if (!content) return ''
+    
+    let processed = content
+    
+    // Конвертируем Tenor embed div в iframe
+    // Ищем: <div class="tenor-gif-embed" data-postid="27109465" ...>...</div>
+    const tenorRegex = /<div[^>]*class="tenor-gif-embed"[^>]*data-postid="(\d+)"[^>]*>[\s\S]*?<\/div>\s*(<script[^>]*tenor\.com[^>]*><\/script>)?/gi
+    processed = processed.replace(tenorRegex, (match, postId) => {
+      return `<div class="tenor-container" style="max-width: 100%; margin: 1rem 0;">
+        <iframe src="https://tenor.com/embed/${postId}" 
+          width="100%" 
+          height="400" 
+          frameborder="0" 
+          allowfullscreen="true"
+          style="border-radius: 12px; max-width: 480px;">
+        </iframe>
+      </div>`
+    })
+    
+    // Удаляем отдельные скрипты Tenor
+    processed = processed.replace(/<script[^>]*tenor\.com[^>]*>[\s\S]*?<\/script>/gi, '')
+    
+    return processed
+  }
 
   const fetchData = async () => {
     try {
@@ -254,7 +236,7 @@ export default function SublessonPage() {
           {/* Контент */}
           <article 
             className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600"
-            dangerouslySetInnerHTML={{ __html: sublesson.content }}
+            dangerouslySetInnerHTML={{ __html: processContent(sublesson.content) }}
           />
 
           {/* Тесты */}

@@ -40,50 +40,31 @@ export default function LessonPage() {
     }
   }, [data])
 
-  // Загрузка скриптов для embed (Tenor, GIPHY и т.д.)
-  useEffect(() => {
-    const content = data?.lesson?.content
-    if (content) {
-      // Проверяем наличие Tenor embed
-      if (content.includes('tenor-gif-embed') || content.includes('tenor.com')) {
-        const loadTenor = () => {
-          const existingScript = document.querySelector('script[src*="tenor.com/embed.js"]')
-          if (!existingScript) {
-            const script = document.createElement('script')
-            script.src = 'https://tenor.com/embed.js'
-            script.async = true
-            script.onload = () => {
-              setTimeout(() => {
-                if (window.TENOR && window.TENOR.init) {
-                  window.TENOR.init()
-                }
-              }, 100)
-            }
-            document.body.appendChild(script)
-          } else {
-            // Скрипт уже загружен - переинициализируем
-            setTimeout(() => {
-              if (window.TENOR && window.TENOR.init) {
-                window.TENOR.init()
-              }
-            }, 100)
-          }
-        }
-        loadTenor()
-      }
-      
-      // Проверяем наличие GIPHY embed
-      if (content.includes('giphy-embed') || content.includes('giphy.com')) {
-        const existingScript = document.querySelector('script[src*="giphy.com/embed.js"]')
-        if (!existingScript) {
-          const script = document.createElement('script')
-          script.src = 'https://giphy.com/embed.js'
-          script.async = true
-          document.body.appendChild(script)
-        }
-      }
-    }
-  }, [data?.lesson?.content])
+  // Функция для обработки контента - конвертирует Tenor embed в iframe
+  const processContent = (content) => {
+    if (!content) return ''
+    
+    let processed = content
+    
+    // Конвертируем Tenor embed div в iframe
+    const tenorRegex = /<div[^>]*class="tenor-gif-embed"[^>]*data-postid="(\d+)"[^>]*>[\s\S]*?<\/div>\s*(<script[^>]*tenor\.com[^>]*><\/script>)?/gi
+    processed = processed.replace(tenorRegex, (match, postId) => {
+      return `<div class="tenor-container" style="max-width: 100%; margin: 1rem 0;">
+        <iframe src="https://tenor.com/embed/${postId}" 
+          width="100%" 
+          height="400" 
+          frameborder="0" 
+          allowfullscreen="true"
+          style="border-radius: 12px; max-width: 480px;">
+        </iframe>
+      </div>`
+    })
+    
+    // Удаляем отдельные скрипты Tenor
+    processed = processed.replace(/<script[^>]*tenor\.com[^>]*>[\s\S]*?<\/script>/gi, '')
+    
+    return processed
+  }
 
   const fetchData = async () => {
     try {
@@ -265,7 +246,7 @@ export default function LessonPage() {
           {/* Контент урока */}
           <article 
             className="prose prose-lg max-w-none prose-headings:text-gray-800 prose-p:text-gray-600 prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded prose-pre:bg-gray-900"
-            dangerouslySetInnerHTML={{ __html: lesson.content }}
+            dangerouslySetInnerHTML={{ __html: processContent(lesson.content) }}
           />
 
           {/* Тесты - Проверка понимания */}
