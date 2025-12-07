@@ -35,8 +35,16 @@ export async function POST(request) {
 
   } catch (error) {
     console.error('Ошибка входа:', error)
+    console.error('Детали ошибки:', {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    })
     return NextResponse.json(
-      { error: 'Внутренняя ошибка сервера' },
+      { 
+        error: 'Внутренняя ошибка сервера',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      },
       { status: 500 }
     )
   }
