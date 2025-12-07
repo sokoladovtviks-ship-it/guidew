@@ -897,6 +897,7 @@ function EditModal({ item, onClose, onSave }) {
   const [uploading, setUploading] = useState(false)
   const textareaRef = useRef(null)
   const fileInputRef = useRef(null)
+  const videoFileInputRef = useRef(null)
 
   const handleSubmit = (e) => {
     e.preventDefault()
@@ -964,13 +965,56 @@ function EditModal({ item, onClose, onSave }) {
     }
   }
 
-  // Обработчик выбора файла
+  // Обработчик выбора файла (изображение)
   const handleFileSelect = (e) => {
     const file = e.target.files?.[0]
     if (file) {
       uploadAndInsertImage(file)
     }
     e.target.value = '' // Сброс для повторного выбора
+  }
+
+  // Обработчик выбора видео файла
+  const handleVideoFileSelect = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    setUploading(true)
+    try {
+      const formData = new FormData()
+      formData.append('video', file)
+      
+      const response = await fetch('/api/upload/video', {
+        method: 'POST',
+        body: formData
+      })
+      
+      const result = await response.json()
+      
+      if (result.success && result.url) {
+        const videoTag = `
+<div class="video-container my-4">
+  <video 
+    src="${result.url}" 
+    controls 
+    class="w-full rounded-lg"
+    style="max-width: 100%; height: auto;"
+  >
+    Ваш браузер не поддерживает видео.
+  </video>
+</div>`
+        insertAtCursor(videoTag)
+        alert('Видео успешно загружено!')
+      } else {
+        alert(result.error || 'Ошибка загрузки видео')
+      }
+    } catch (error) {
+      console.error('Ошибка загрузки видео:', error)
+      alert('Ошибка загрузки видео')
+    } finally {
+      setUploading(false)
+      e.target.value = '' // Сброс для повторного выбора
+    }
   }
 
   // Вставить видео по URL
@@ -1145,15 +1189,40 @@ function EditModal({ item, onClose, onSave }) {
                     <span className="hidden sm:inline">Картинка</span>
                   </button>
                   
-                  {/* Видео */}
+                  {/* Видео по ссылке */}
                   <button
                     type="button"
                     onClick={() => setShowVideoModal(true)}
                     className="flex items-center gap-1 px-2 py-1.5 text-xs bg-white text-gray-700 rounded hover:bg-gray-50 border border-gray-300"
-                    title="Вставить видео (YouTube, RuTube, VK)"
+                    title="Вставить видео по ссылке (YouTube, RuTube, VK)"
                   >
                     <Video className="w-3.5 h-3.5" />
-                    <span className="hidden sm:inline">Видео</span>
+                    <span className="hidden sm:inline">Видео URL</span>
+                  </button>
+                  
+                  {/* Загрузить видео файл */}
+                  <input
+                    type="file"
+                    ref={videoFileInputRef}
+                    accept="video/*"
+                    onChange={handleVideoFileSelect}
+                    className="hidden"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => videoFileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex items-center gap-1 px-2 py-1.5 text-xs bg-white text-gray-700 rounded hover:bg-gray-50 border border-gray-300 disabled:opacity-50"
+                    title="Загрузить видео файл (MP4, WebM, OGG, MOV)"
+                  >
+                    {uploading ? (
+                      <div className="w-3.5 h-3.5 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin" />
+                    ) : (
+                      <Upload className="w-3.5 h-3.5" />
+                    )}
+                    <span className="hidden sm:inline">
+                      {uploading ? 'Загрузка...' : 'Видео файл'}
+                    </span>
                   </button>
                   
                   <span className="hidden sm:block text-xs text-gray-500 ml-auto">

@@ -1,11 +1,12 @@
 import { NextResponse } from 'next/server'
+import { getCourses, saveCourses } from '@/lib/db'
 import fs from 'fs'
 import path from 'path'
 
-const dataPath = path.join(process.cwd(), 'data', 'courses.json')
-
-function getData() {
+// Fallback на JSON если база недоступна
+function getDataFromFile() {
   try {
+    const dataPath = path.join(process.cwd(), 'data', 'courses.json')
     const data = fs.readFileSync(dataPath, 'utf8')
     return JSON.parse(data)
   } catch (error) {
@@ -13,8 +14,9 @@ function getData() {
   }
 }
 
-function saveData(data) {
+function saveDataToFile(data) {
   try {
+    const dataPath = path.join(process.cwd(), 'data', 'courses.json')
     fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
   } catch (error) {
     console.error('Save error:', error)
@@ -25,8 +27,8 @@ function saveData(data) {
 export async function GET(request, { params }) {
   try {
     const { courseId } = await params
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
@@ -34,7 +36,14 @@ export async function GET(request, { params }) {
     
     return NextResponse.json(course)
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to load course' }, { status: 500 })
+    console.error('Error loading course:', error)
+    // Fallback на JSON
+    const data = getDataFromFile()
+    const course = data.courses.find(c => c.id === courseId)
+    if (!course) {
+      return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+    }
+    return NextResponse.json(course)
   }
 }
 
@@ -43,22 +52,28 @@ export async function PUT(request, { params }) {
   try {
     const { courseId } = await params
     const body = await request.json()
-    const data = getData()
-    const courseIndex = data.courses.findIndex(c => c.id === courseId)
+    const courses = await getCourses()
+    const courseIndex = courses.findIndex(c => c.id === courseId)
     
     if (courseIndex === -1) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     }
     
-    data.courses[courseIndex] = {
-      ...data.courses[courseIndex],
+    courses[courseIndex] = {
+      ...courses[courseIndex],
       ...body
     }
     
-    saveData(data)
+    await saveCourses(courses)
     
-    return NextResponse.json(data.courses[courseIndex])
+    // Также сохраняем в JSON для резервной копии
+    const data = getDataFromFile()
+    data.courses = courses
+    saveDataToFile(data)
+    
+    return NextResponse.json(courses[courseIndex])
   } catch (error) {
+    console.error('Error updating course:', error)
     return NextResponse.json({ error: 'Failed to update course' }, { status: 500 })
   }
 }
@@ -67,18 +82,24 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { courseId } = await params
-    const data = getData()
-    const index = data.courses.findIndex(c => c.id === courseId)
+    const courses = await getCourses()
+    const index = courses.findIndex(c => c.id === courseId)
     
     if (index === -1) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     }
     
-    data.courses.splice(index, 1)
-    saveData(data)
+    courses.splice(index, 1)
+    await saveCourses(courses)
+    
+    // Также сохраняем в JSON для резервной копии
+    const data = getDataFromFile()
+    data.courses = courses
+    saveDataToFile(data)
     
     return NextResponse.json({ success: true })
   } catch (error) {
+    console.error('Error deleting course:', error)
     return NextResponse.json({ error: 'Failed to delete course' }, { status: 500 })
   }
 }
