@@ -1,44 +1,23 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-
-const dataPath = path.join(process.cwd(), 'data', 'courses.json')
-
-function getData() {
-  try {
-    const data = fs.readFileSync(dataPath, 'utf8')
-    return JSON.parse(data)
-  } catch (error) {
-    return { courses: [] }
-  }
-}
-
-function saveData(data) {
-  try {
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
-  } catch (error) {
-    console.error('Save error:', error)
-  }
-}
+import { getAllCourses, saveAllCourses } from '@/lib/courses-helper'
 
 // GET - получить урок
 export async function GET(request, { params }) {
   try {
     const { courseId, moduleId, lessonId } = await params
-    const data = getData()
-    const courses = data.courses
+    const courses = await getAllCourses()
     const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     }
     
-    const module = course.modules.find(m => m.id === moduleId)
+    const module = course.modules?.find(m => m.id === moduleId)
     if (!module) {
       return NextResponse.json({ error: 'Module not found' }, { status: 404 })
     }
     
-    const lesson = module.lessons.find(l => l.id === lessonId)
+    const lesson = module.lessons?.find(l => l.id === lessonId)
     if (!lesson) {
       return NextResponse.json({ error: 'Lesson not found' }, { status: 404 })
     }
@@ -55,16 +34,20 @@ export async function PUT(request, { params }) {
   try {
     const { courseId, moduleId, lessonId } = await params
     const body = await request.json()
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getAllCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     }
     
-    const module = course.modules.find(m => m.id === moduleId)
+    const module = course.modules?.find(m => m.id === moduleId)
     if (!module) {
       return NextResponse.json({ error: 'Module not found' }, { status: 404 })
+    }
+    
+    if (!module.lessons) {
+      module.lessons = []
     }
     
     const lessonIndex = module.lessons.findIndex(l => l.id === lessonId)
@@ -73,7 +56,7 @@ export async function PUT(request, { params }) {
     }
     
     module.lessons[lessonIndex] = { ...module.lessons[lessonIndex], ...body }
-    saveData(data)
+    await saveAllCourses(courses)
     
     return NextResponse.json(module.lessons[lessonIndex])
   } catch (error) {
@@ -86,16 +69,20 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { courseId, moduleId, lessonId } = await params
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getAllCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
     }
     
-    const module = course.modules.find(m => m.id === moduleId)
+    const module = course.modules?.find(m => m.id === moduleId)
     if (!module) {
       return NextResponse.json({ error: 'Module not found' }, { status: 404 })
+    }
+    
+    if (!module.lessons) {
+      module.lessons = []
     }
     
     const lessonIndex = module.lessons.findIndex(l => l.id === lessonId)
@@ -104,7 +91,7 @@ export async function DELETE(request, { params }) {
     }
     
     module.lessons.splice(lessonIndex, 1)
-    saveData(data)
+    await saveAllCourses(courses)
     
     return NextResponse.json({ success: true })
   } catch (error) {

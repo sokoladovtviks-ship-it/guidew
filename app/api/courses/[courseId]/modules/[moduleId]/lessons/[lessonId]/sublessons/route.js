@@ -1,32 +1,12 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-
-const dataPath = path.join(process.cwd(), 'data', 'courses.json')
-
-function getData() {
-  try {
-    const data = fs.readFileSync(dataPath, 'utf8')
-    return JSON.parse(data)
-  } catch (error) {
-    return { courses: [] }
-  }
-}
-
-function saveData(data) {
-  try {
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
-  } catch (error) {
-    console.error('Save error:', error)
-  }
-}
+import { getAllCourses, saveAllCourses } from '@/lib/courses-helper'
 
 // GET - получить все подуроки урока
 export async function GET(request, { params }) {
   try {
     const { courseId, moduleId, lessonId } = await params
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getAllCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
@@ -54,8 +34,8 @@ export async function POST(request, { params }) {
   try {
     const { courseId, moduleId, lessonId } = await params
     const body = await request.json()
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getAllCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
@@ -71,6 +51,10 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: 'Lesson not found' }, { status: 404 })
     }
     
+    if (!lesson.sublessons) {
+      lesson.sublessons = []
+    }
+    
     const newSublesson = {
       id: body.id || `sublesson-${Date.now()}`,
       title: body.title,
@@ -79,12 +63,8 @@ export async function POST(request, { params }) {
       tasks: body.tasks || []
     }
     
-    if (!lesson.sublessons) {
-      lesson.sublessons = []
-    }
-    
     lesson.sublessons.push(newSublesson)
-    saveData(data)
+    await saveAllCourses(courses)
     
     return NextResponse.json(newSublesson, { status: 201 })
   } catch (error) {
@@ -104,8 +84,8 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Sublesson ID required' }, { status: 400 })
     }
     
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getAllCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
@@ -121,14 +101,13 @@ export async function DELETE(request, { params }) {
       return NextResponse.json({ error: 'Lesson not found' }, { status: 404 })
     }
     
-    // Удаляем подурок
     const sublessonIndex = lesson.sublessons.findIndex(s => s.id === sublessonId)
     if (sublessonIndex === -1) {
       return NextResponse.json({ error: 'Sublesson not found' }, { status: 404 })
     }
     
     lesson.sublessons.splice(sublessonIndex, 1)
-    saveData(data)
+    await saveAllCourses(courses)
     
     return NextResponse.json({ success: true })
   } catch (error) {

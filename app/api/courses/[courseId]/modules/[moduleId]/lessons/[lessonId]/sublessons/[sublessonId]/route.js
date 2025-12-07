@@ -1,12 +1,12 @@
 import { NextResponse } from 'next/server'
-import { getCourses, saveCourses } from '@/lib/mongodb'
+import { getAllCourses, saveAllCourses } from '@/lib/courses-helper'
 
 export async function PUT(request, { params }) {
   try {
     const { courseId, moduleId, lessonId, sublessonId } = await params
     const updates = await request.json()
     
-    const courses = await getCourses()
+    const courses = await getAllCourses()
     const course = courses.find(c => c.id === courseId)
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
@@ -22,18 +22,21 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Lesson not found' }, { status: 404 })
     }
     
-    const sublessonIndex = lesson.sublessons?.findIndex(s => s.id === sublessonId)
+    if (!lesson.sublessons) {
+      lesson.sublessons = []
+    }
+    
+    const sublessonIndex = lesson.sublessons.findIndex(s => s.id === sublessonId)
     if (sublessonIndex === -1) {
       return NextResponse.json({ error: 'Sublesson not found' }, { status: 404 })
     }
     
-    // Обновляем подурок
     lesson.sublessons[sublessonIndex] = {
       ...lesson.sublessons[sublessonIndex],
       ...updates
     }
     
-    await saveCourses(courses)
+    await saveAllCourses(courses)
     return NextResponse.json(lesson.sublessons[sublessonIndex])
   } catch (error) {
     console.error('Error updating sublesson:', error)
