@@ -993,14 +993,16 @@ function EditModal({ item, onClose, onSave }) {
       
       if (result.success && result.url) {
         const videoTag = `
-<div class="video-container my-4">
+<div class="my-4" style="max-width: 100%;">
   <video 
     src="${result.url}" 
     controls 
     class="w-full rounded-lg"
-    style="max-width: 100%; height: auto;"
+    style="max-width: 100%; height: auto; display: block;"
+    preload="metadata"
   >
     Ваш браузер не поддерживает видео.
+    <a href="${result.url}">Скачать видео</a>
   </video>
 </div>`
         insertAtCursor(videoTag)
