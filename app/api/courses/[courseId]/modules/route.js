@@ -1,36 +1,20 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-
-const dataPath = path.join(process.cwd(), 'data', 'courses.json')
-
-function getData() {
-  try {
-    const data = fs.readFileSync(dataPath, 'utf8')
-    return JSON.parse(data)
-  } catch (error) {
-    return { courses: [] }
-  }
-}
-
-function saveData(data) {
-  try {
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
-  } catch (error) {
-    console.error('Save error:', error)
-  }
-}
+import { getAllCourses, saveAllCourses } from '@/lib/courses-helper'
 
 // POST - создать новый модуль
 export async function POST(request, { params }) {
   try {
     const { courseId } = await params
     const body = await request.json()
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getAllCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+    }
+    
+    if (!course.modules) {
+      course.modules = []
     }
     
     const newModule = {
@@ -42,7 +26,7 @@ export async function POST(request, { params }) {
     }
     
     course.modules.push(newModule)
-    saveData(data)
+    await saveAllCourses(courses)
     
     return NextResponse.json(newModule, { status: 201 })
   } catch (error) {

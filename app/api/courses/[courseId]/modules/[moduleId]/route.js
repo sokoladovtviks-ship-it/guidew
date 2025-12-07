@@ -1,36 +1,20 @@
 import { NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-
-const dataPath = path.join(process.cwd(), 'data', 'courses.json')
-
-function getData() {
-  try {
-    const data = fs.readFileSync(dataPath, 'utf8')
-    return JSON.parse(data)
-  } catch (error) {
-    return { courses: [] }
-  }
-}
-
-function saveData(data) {
-  try {
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
-  } catch (error) {
-    console.error('Save error:', error)
-  }
-}
+import { getAllCourses, saveAllCourses } from '@/lib/courses-helper'
 
 // PUT - обновить модуль
 export async function PUT(request, { params }) {
   try {
     const { courseId, moduleId } = await params
     const body = await request.json()
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getAllCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+    }
+    
+    if (!course.modules) {
+      course.modules = []
     }
     
     const moduleIndex = course.modules.findIndex(m => m.id === moduleId)
@@ -39,7 +23,7 @@ export async function PUT(request, { params }) {
     }
     
     course.modules[moduleIndex] = { ...course.modules[moduleIndex], ...body }
-    saveData(data)
+    await saveAllCourses(courses)
     
     return NextResponse.json(course.modules[moduleIndex])
   } catch (error) {
@@ -52,11 +36,15 @@ export async function PUT(request, { params }) {
 export async function DELETE(request, { params }) {
   try {
     const { courseId, moduleId } = await params
-    const data = getData()
-    const course = data.courses.find(c => c.id === courseId)
+    const courses = await getAllCourses()
+    const course = courses.find(c => c.id === courseId)
     
     if (!course) {
       return NextResponse.json({ error: 'Course not found' }, { status: 404 })
+    }
+    
+    if (!course.modules) {
+      course.modules = []
     }
     
     const moduleIndex = course.modules.findIndex(m => m.id === moduleId)
@@ -71,7 +59,7 @@ export async function DELETE(request, { params }) {
       mod.number = idx
     })
     
-    saveData(data)
+    await saveAllCourses(courses)
     
     return NextResponse.json({ success: true })
   } catch (error) {

@@ -1,42 +1,14 @@
 import { NextResponse } from 'next/server'
-import { getCourses, saveCourses } from '@/lib/db'
-import fs from 'fs'
-import path from 'path'
-
-// Fallback на JSON если база недоступна
-function getDataFromFile() {
-  try {
-    const dataPath = path.join(process.cwd(), 'data', 'courses.json')
-    const data = fs.readFileSync(dataPath, 'utf8')
-    return JSON.parse(data)
-  } catch (error) {
-    return { courses: [] }
-  }
-}
-
-function saveDataToFile(data) {
-  try {
-    const dataPath = path.join(process.cwd(), 'data', 'courses.json')
-    const dir = path.dirname(dataPath)
-    if (!fs.existsSync(dir)) {
-      fs.mkdirSync(dir, { recursive: true })
-    }
-    fs.writeFileSync(dataPath, JSON.stringify(data, null, 2))
-  } catch (error) {
-    console.error('Save error:', error)
-  }
-}
+import { getAllCourses, saveAllCourses } from '@/lib/courses-helper'
 
 // GET - получить все курсы
 export async function GET() {
   try {
-    const courses = await getCourses()
+    const courses = await getAllCourses()
     return NextResponse.json(courses)
   } catch (error) {
     console.error('Error loading courses:', error)
-    // Fallback на JSON
-    const data = getDataFromFile()
-    return NextResponse.json(data.courses || [])
+    return NextResponse.json([], { status: 500 })
   }
 }
 
@@ -44,7 +16,7 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json()
-    const courses = await getCourses()
+    const courses = await getAllCourses()
     
     const newCourse = {
       id: body.id || `course-${Date.now()}`,
@@ -54,12 +26,7 @@ export async function POST(request) {
     }
     
     courses.push(newCourse)
-    await saveCourses(courses)
-    
-    // Также сохраняем в JSON для резервной копии
-    const data = getDataFromFile()
-    data.courses = courses
-    saveDataToFile(data)
+    await saveAllCourses(courses)
     
     return NextResponse.json(newCourse, { status: 201 })
   } catch (error) {
